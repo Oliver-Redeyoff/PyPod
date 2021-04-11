@@ -47,14 +47,12 @@ def main_loop():
     render()
     
     if(currentState == 0):
-        if (welcomeTimer >= refreshRate*2):
+        if (welcomeTimer >= refreshRate):
             setState(1)
-        else:
-            welcomeTimer += 1
-
-    if(currentState == 1):
-        currentScreenRef.scroll(2)
+            welcomeTimer = 0
     
+    welcomeTimer += 1
+
     time.sleep(1/refreshRate)
     main_loop()
 
@@ -65,7 +63,7 @@ def render():
     draw = ImageDraw.Draw(screen)
     font18 = ImageFont.truetype("./Assets/Chicago.ttf",12)
 
-    draw.text((1, 1), states[currentState], fill = "WHITE",font=font18)
+    draw.text((1, 1), states[currentState], fill = "BLACK",font=font18)
 
     screenImg = currentScreenRef.render()
     if(currentState == 0):

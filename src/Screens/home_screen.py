@@ -14,7 +14,11 @@ class HomeScreen():
         draw = ImageDraw.Draw(screen)
         font18 = ImageFont.truetype("./Assets/Chicago.ttf",12)
 
-        draw.text((10, self.scrollValue), 'is this working', fill = "WHITE",font=font18)
+        draw.rectangle(xy=[(5, 10 + 20*self.scrollValue-5), (self.width-10, 10 + 20*self.scrollValue+15)], fill="BLUE", width= 5)
+
+        draw.text((10, 10), 'Spotify', fill = "WHITE",font=font18)
+        draw.text((10, 30), 'Photos', fill = "WHITE",font=font18)
+        draw.text((10, 50), 'Settings', fill = "WHITE",font=font18)
 
         return screen
 
