@@ -6,6 +6,7 @@ import spidev as SPI
 sys.path.append("..")
 from lib import LCD_1inch8
 from PIL import Image,ImageDraw,ImageFont
+import screenFactory
 
 welcomeStr = """
   ___      ___         _         __   _ 
@@ -23,34 +24,60 @@ bus = 0
 device = 0
 disp = LCD_1inch8.LCD_1inch8()
 Lcd_ScanDir = LCD_1inch8.SCAN_DIR_DFT  #SCAN_DIR_DFT = D2U_L2R
+refreshRate = 20
+
+headerHeight = 20
 
 states = {
     0: "Welcome",
     1: "Home"
 }
-currentState = 0
+welcomeTimer = 0
+
+def setState(stateId):
+    global disp, currentState, currentScreenRef
+
+    print("Setting state to " + states[stateId])
+    currentState = stateId
+    currentScreenRef = screenFactory.getScreenRef(currentState, disp.width, disp.height-headerHeight)
 
 def main_loop():
+    global currentScreenRef, welcomeTimer, refreshRate
+
     render()
+    
+    if(currentState == 0):
+        if (welcomeTimer >= refreshRate*2):
+            setState(1)
+        else:
+            welcomeTimer += 1
+
+    if(currentState == 1):
+        currentScreenRef.scroll(2)
+    
+    time.sleep(1/refreshRate)
+    main_loop()
 
 def render():
-    print('Rendering to PyPod')
-    print('Rendering ' + states[currentState])
-    
-    # Clear display.
-    disp.clear()
+    global disp, currentScreenRef
 
-    image = Image.new("RGB", (disp.width, disp.height), "WHITE")
-    draw = ImageDraw.Draw(image)
-    font18 = ImageFont.truetype("./Assets/Chicago.ttf",12) 
+    screen = Image.new("RGB", (disp.width, disp.height), "WHITE")
+    draw = ImageDraw.Draw(screen)
+    font18 = ImageFont.truetype("./Assets/Chicago.ttf",12)
 
-    draw.text((5, 5), states[currentState], fill = "BLACK",font=font18)
+    draw.text((1, 1), states[currentState], fill = "WHITE",font=font18)
 
-    disp.ShowImage(image)
+    screenImg = currentScreenRef.render()
+    if(currentState == 0):
+        screen.paste(screenImg, (0, 0))
+    else:
+        screen.paste(screenImg, (0, headerHeight))
 
-    disp.module_exit()
+    disp.ShowImage(screen)
 
 if __name__ == '__main__':
     print(welcomeStr)
     disp.Init()
+    disp.clear()
+    setState(0)
     main_loop()

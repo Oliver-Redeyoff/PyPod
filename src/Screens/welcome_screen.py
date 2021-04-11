@@ -1,10 +1,17 @@
+import sys
+sys.path.append("..")
+from PIL import Image,ImageDraw,ImageFont
+
 class WelcomeScreen():
 
-    def __init__(self, x):
-        self.x = x
+    def __init__(self, scrollValue, width, height):
+        self.scrollValue = scrollValue
+        self.width = width
+        self.height = height
     
     def render(self):
-        print('Rendering welcome screen')
+        screen = Image.open('./Assets/welcomeImg.jpg')
+        return screen
 
-    def scrollX(self, offset):
-        self.x += offset
+    def scroll(self, offset):
+        self.scrollValue += offset
